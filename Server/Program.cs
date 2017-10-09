@@ -14,9 +14,10 @@ namespace Server
             CConsole.GetCommand();
         }
 
-        private static void OnClientConnected(Client client)
+        private async static void OnClientConnected(Client client)
         {
-            Console.WriteLine("NIGGER");
+            //await client.Send("connect", "Connected to Server");
+            Console.WriteLine(client.IP+" connected!");
         }
     }
 }
