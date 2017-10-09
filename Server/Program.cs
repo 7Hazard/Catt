@@ -1,6 +1,4 @@
-﻿using SocketIo;
-using SocketIo.SocketTypes;
-using System;
+﻿using System;
 
 namespace Server
 {
@@ -8,9 +6,17 @@ namespace Server
     {
         static void Main(string[] args)
         {
-            SocketServer.Start();
+            // Subscribe to events
+            Server.OnClientConnected += OnClientConnected;
+
+            Server.Start();
 
             CConsole.GetCommand();
+        }
+
+        private static void OnClientConnected(Client client)
+        {
+            Console.WriteLine("NIGGER");
         }
     }
 }

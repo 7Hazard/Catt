@@ -10,8 +10,4 @@
     <OutputPath>..\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SocketIo.Core" Version="2.0.0" />
-  </ItemGroup>
-
 </Project>

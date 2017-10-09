@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Server
 {
@@ -15,8 +13,14 @@ namespace Server
                     return;
                 case "quit":
                     return;
+                case "start":
+                    Server.Start();
+                    break;
+                case "stop":
+                    Server.Stop();
+                    break;
                 case "restart":
-                    SocketServer.Restart();
+                    Server.Restart();
                     break;
                 default:
                     Console.WriteLine("Command not found!");
