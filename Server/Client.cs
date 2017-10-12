@@ -25,7 +25,7 @@ namespace Server
             return Task.Run(()=>
             {
                 int startTickCount = Environment.TickCount;
-                int sent = 0;  // how many bytes is already sent
+                int sent = 0;
                 do
                 {
                     if (Environment.TickCount > startTickCount + timeout)
@@ -40,19 +40,23 @@ namespace Server
                             ex.SocketErrorCode == SocketError.IOPending ||
                             ex.SocketErrorCode == SocketError.NoBufferSpaceAvailable)
                         {
-                            // socket buffer is probably full, wait and try again
                             Task.Delay(30);
                         }
                         else
-                            throw ex;  // any serious error occurr
+                            throw ex;
                     }
                 } while (sent < size);
             });
         }
 
-        public Task Send(string eventname, string message)
+        public Task Send(string message)
         {
             return Send(socket, Encoding.UTF8.GetBytes(message), 0, message.Length, 10000);
+        }
+
+        public Task Send(string eventname, string message)
+        {
+            return Send(socket, Encoding.UTF8.GetBytes(eventname+" "+message), 0, message.Length, 10000);
         }
 
         public Task Send(string eventname, string message, int msTimeout)

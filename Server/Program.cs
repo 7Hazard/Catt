@@ -16,7 +16,7 @@ namespace Server
 
         private async static void OnClientConnected(Client client)
         {
-            //await client.Send("connect", "Connected to Server");
+            await client.Send("connect", "Connected to Server");
             Console.WriteLine(client.IP+" connected!");
         }
     }

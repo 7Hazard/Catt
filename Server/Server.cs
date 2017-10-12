@@ -18,7 +18,7 @@ namespace Server
         {
             server.Start();
 
-            HandleClients();
+            AcceptClients();
 
             Console.WriteLine("Server started");
             return true;
@@ -40,7 +40,7 @@ namespace Server
         static List<Client> clients = new List<Client>();
         static IReadOnlyList<Client> ConnectedClients = clients;
 
-        static void HandleClients()
+        static void AcceptClients()
         {
             Action task = null;
             Task.Run(task = async () =>
