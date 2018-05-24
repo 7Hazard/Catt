@@ -14,8 +14,9 @@
     margin: auto;
 }
 
-#chatbox {
+#chat-box {
     height: 90vh;
+    margin-bottom: -65px;
     overflow-y: auto;
 }
 

@@ -1,6 +1,19 @@
 ﻿$(document).ready(function(){
     //UnhideAnimate();
     ChatConnect();
+
+    $("#chat-input").keyup((event) => { // När tangenten har gått upp
+        if (event.keyCode === 13) { // Enter tangenten
+            let input = $("#chat-input").val(); // Meddelandet
+            if( // Meddelandet inte är tomt och är ansluten
+                input != ""
+                && ws.readyState == ws.OPEN
+            ){
+                SendMessage(input);
+                $("#chat-input").val("")
+            }
+        }
+    });
 });
 
 var ws;
@@ -8,7 +21,7 @@ var ws;
 function ChatConnect(){
     $("#loader").removeClass("hide");
     ws = new WebSocket('ws://localhost:6969/chat');
-    SetwsEventListeners();
+    SetEventListeners();
 }
 
 function ChatDisconnect(){
@@ -21,7 +34,7 @@ function ChatReconnect(){
 }
 
 function OutputMessage(timestamp, user, message){
-    $("#chatbox").append( 
+    $("#chat-box").append( 
         "<div class='message white-text'><p>["+
         timestamp
         +"] </p><p>"+
@@ -32,11 +45,11 @@ function OutputMessage(timestamp, user, message){
     );
 }
 
-function SendMessage(){
-
+function SendMessage(message){
+    ws.send(message);
 }
 
-function SetwsEventListeners(){
+function SetEventListeners(){
     // När anslutningen öppnas
     ws.addEventListener('open', function (event) {
         //OutputMessage(GetTimestamp(), "Catt", "Connected");
@@ -50,10 +63,14 @@ function SetwsEventListeners(){
     
     // Hanterar alla servermeddelande
     ws.addEventListener('message', (event) => {
-        let msg = event.data.split(" ");
-        switch (msg[0]) {
+        let args = event.data.split(" ");
+        switch (args[0]) {
             case "userconnect": // En användare anslöt
-            OutputMessage("", "Catt", msg[1]+" connected");
+            OutputMessage(args[1], "Catt", args[2]+" connected");
+            break;
+
+            case "message": // En klient skickade ett meddelande
+            OutputMessage(args[1], args[2], args.splice(3).join(' '));
             break;
         }
     });
