@@ -3,14 +3,16 @@
     ChatConnect();
 });
 
+var ws;
+
 function ChatConnect(){
-    socket = new WebSocket('ws://127.0.0.1:6969');
-    SetSocketEventListeners();
-    //socket.send("message", "JIDHOEG");
+    $("#loader").removeClass("hide");
+    ws = new WebSocket('ws://localhost:6969/chat');
+    SetwsEventListeners();
 }
 
 function ChatDisconnect(){
-    socket.close();
+    ws.close();
 }
 
 function ChatReconnect(){
@@ -19,25 +21,48 @@ function ChatReconnect(){
 }
 
 function OutputMessage(timestamp, user, message){
-    document.getElementById("chatbox").innerHTML += 
+    $("#chatbox").append( 
         "<div class='message white-text'><p>["+
         timestamp
         +"] </p><p>"+
         user
         +": </p><p>"+
         message
-        +"</p></div>";
+        +"</p></div>"
+    );
 }
 
-var socket;
+function SendMessage(){
 
-function SetSocketEventListeners(){
-    socket.addEventListener('connect', function (event) {
-        OutputMessage("", "Catt", "Chat loaded");
-        //socket.send('Hello Server!');
+}
+
+function SetwsEventListeners(){
+    // När anslutningen öppnas
+    ws.addEventListener('open', function (event) {
+        //OutputMessage(GetTimestamp(), "Catt", "Connected");
+        HideLoader();
     });
 
-    socket.addEventListener('message', function (event) {
-        console.log('Message from server ', event.data);
+    // När anslutningen stängs
+    ws.addEventListener('close', function (event) {
+        OutputMessage(GetTimestamp(), "Catt", "Disconnected");
     });
+    
+    // Hanterar alla servermeddelande
+    ws.addEventListener('message', (event) => {
+        let msg = event.data.split(" ");
+        switch (msg[0]) {
+            case "userconnect": // En användare anslöt
+            OutputMessage("", "Catt", msg[1]+" connected");
+            break;
+        }
+    });
+}
+
+function GetTimestamp(){
+    return new Date().toTimeString().split(' ')[0];
+}
+
+function HideLoader(){
+    $("#loader").addClass("hide");
 }

@@ -1,24 +1,17 @@
 ﻿using System;
-using System.Net.Sockets;
-using System.Net;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using WebSocketSharp.Server;
 
 namespace Server
 {
     public static class Server
     {
-        // Events
-        public delegate void OnClientConnectedHandler(Client client);
-        public static event OnClientConnectedHandler OnClientConnected = delegate { };
+        static WebSocketServer ws = new WebSocketServer("ws://localhost:6969");
 
-        static TcpListener server = new TcpListener(IPAddress.Any, 6969);
-        
         public static bool Start()
         {
-            server.Start();
-
-            AcceptClients();
+            ws.AddWebSocketService<Chat>("/chat");
+            ws.Start();
 
             Console.WriteLine("Server started");
             return true;
@@ -26,7 +19,7 @@ namespace Server
 
         public static void Stop()
         {
-            server.Stop();
+            ws.Stop();
             Console.WriteLine("Server stopped");
         }
 
@@ -34,22 +27,6 @@ namespace Server
         {
             Stop();
             Start();
-        }
-
-        // Clients
-        static List<Client> clients = new List<Client>();
-        static IReadOnlyList<Client> ConnectedClients = clients;
-
-        static void AcceptClients()
-        {
-            Action task = null;
-            Task.Run(task = async () =>
-            {
-                Client client = new Client(await server.AcceptTcpClientAsync());
-                clients.Add(client);
-                OnClientConnected(client);
-                task.Invoke();
-            });
         }
     }
 }

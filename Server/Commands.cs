@@ -2,9 +2,9 @@
 
 namespace Server
 {
-    internal class CConsole
+    internal class Commands
     {
-        internal static void GetCommand()
+        internal static void Get()
         {
             string command = Console.ReadLine().ToLower();
             switch (command)
@@ -26,7 +26,7 @@ namespace Server
                     Console.WriteLine("Command not found!");
                     break;
             }
-            GetCommand();
+            Get();
         }
     }
 }
