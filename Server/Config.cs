@@ -42,7 +42,7 @@ namespace Server
         // Members
         Config()
         {
-            host = "localhost";
+            host = "0.0.0.0";
             port = 6969;
         }
 
