@@ -1,4 +1,4 @@
-Simple open-source AES-encrypted chat messaging software (made for a school project)
+Simple open-source chat messaging software using websockets (made for a school project)
 
 Server runs on .NET Core
 
