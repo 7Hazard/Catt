@@ -6,7 +6,12 @@ namespace Server
     {
         static void Main(string[] args)
         {
-            Server.Start();
+            if (!Server.Start())
+            {
+                Console.WriteLine("\n Press any key to continue...");
+                Console.ReadKey();
+                return;
+            }
             Commands.Get();
         }
     }
