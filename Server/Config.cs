@@ -9,15 +9,15 @@ namespace Server
     public class Config
     {
         // Statics
-        static Config config = JsonConvert.DeserializeObject<Config>(ReadConfig());
+        static Config config = JsonConvert.DeserializeObject<Config>(ReadConfig()); // Deserialize config on start
 
         static string ReadConfig()
         {
-            try
+            try // to read config.json if exists
             {
                 return File.ReadAllText("config.json");
             }
-            catch (Exception)
+            catch // else returns empty object
             {
                 return "{}";
             }
@@ -40,7 +40,7 @@ namespace Server
         }
 
         // Members
-        Config()
+        Config() // Default config values
         {
             host = "0.0.0.0";
             port = 6969;

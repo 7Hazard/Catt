@@ -4,15 +4,15 @@ namespace Server
 {
     internal class Commands
     {
-        // Rekursiv funktion för kommandon
+        // Recursive function for commands
         internal static void Get()
         {
             string command = Console.ReadLine().ToLower();
             switch (command)
             {
-                case "exit": // Stänger av programmet
-                    return;
-                case "quit": // Stänger av programmet
+                case "exit": // Shuts down the program
+                case "quit":
+                    Server.Stop();
                     return;
                 case "start":
                     Server.Start();
@@ -23,11 +23,11 @@ namespace Server
                 case "restart":
                     Server.Restart();
                     break;
-                default: // Okänt kommando
+                default: // Unrecognized command
                     Console.WriteLine($"Unrecognized command {command}\n");
                     break;
             }
-            Get(); // Vänta för inmatning igen
+            Get(); // Repeat
         }
     }
 }

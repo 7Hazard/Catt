@@ -7,8 +7,7 @@ namespace Server
     public static class Server
     {
         static WebSocketServer ws;
-
-        // Startar websocket servern
+        
         public static bool Start()
         {
             try
@@ -19,21 +18,23 @@ namespace Server
                 Console.WriteLine("Exception when starting server: \n" + e.Message);
                 return false;
             }
+
+            // Adds overloaded WebSocketBehaviour server via generics
             ws.AddWebSocketService<Chat>("/chat");
+
+            // Starts the websocket server
             ws.Start();
 
             Console.WriteLine($"Server started on {Config.Host}:{Config.Port}");
             return true;
         }
-
-        // Stoppar websocket servern
+        
         public static void Stop()
         {
             ws.Stop();
             Console.WriteLine("Server stopped");
         }
-
-        // Startar om websocket servern
+        
         public static void Restart()
         {
             Stop();
