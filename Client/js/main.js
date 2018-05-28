@@ -1,11 +1,13 @@
 ﻿$(document).ready(function(){
-    //UnhideAnimate();
-    ChatConnect();
+    $('.modal').modal({
+        dismissible: false
+    });
+    $('#connect-modal').modal('open'); // Open connect window
 
-    $("#chat-input").keyup((event) => { // När tangenten har gått upp
-        if (event.keyCode === 13) { // Enter tangenten
-            let input = $("#chat-input").val(); // Meddelandet
-            if( // Meddelandet inte är tomt och är ansluten
+    $("#chat-input").keyup((event) => { // When key has gone up
+        if (event.keyCode === 13) { // ENTER key
+            let input = $("#chat-input").val(); // The message itself
+            if( // Message is empty or disconnected
                 input != ""
                 && ws.readyState == ws.OPEN
             ){
@@ -16,21 +18,57 @@
     });
 });
 
-var ws;
+var name;
+var host;
+var port;
+function InputsValid(){ // Validates and sets user info
+    // If inputs are valid
+    if(
+        $("#name-input").is(':valid')
+        && $("#host-input").is(':valid')
+        && $("#port-input").is(':valid')
+    ){ // Assign them
+        name = $('#name-input').val()
+        host = $('#host-input').val()
+        port = $('#port-input').val()
+    } else { // else invalid
+        return false;
+    }
 
-function ChatConnect(){
-    $("#loader").removeClass("hide");
-    ws = new WebSocket('ws://localhost:6969/chat');
-    SetEventListeners();
+    // If inputs are empty use defaults (placeholders)
+    if(name === ""){
+        name = $('#name-input').attr('placeholder')
+    }
+    if(host === ""){
+        host = $('#host-input').attr('placeholder')
+    }
+    if(port === ""){
+        port = $('#port-input').attr('placeholder')
+    }
+
+    return true;
 }
 
+var ws;
+// Connect to chat server
+function ChatConnect(){
+    if(InputsValid()){ // if inputs are valid
+        $('#connect-modal').modal('close');
+        $("#loader").removeClass("hide");
+        ws = new WebSocket('ws://'+host+':'+port+'/chat?name='+name);
+        SetEventListeners();
+    }
+}
+
+// Disconnect
 function ChatDisconnect(){
     ws.close();
 }
 
+// Reconnect
 function ChatReconnect(){
     ChatDisconnect();
-    ChatConnect();
+    $('#connect-modal').modal('open');
 }
 
 function OutputMessage(timestamp, user, message){
@@ -50,26 +88,29 @@ function SendMessage(message){
 }
 
 function SetEventListeners(){
-    // När anslutningen öppnas
+    // When connection is established
     ws.addEventListener('open', function (event) {
-        //OutputMessage(GetTimestamp(), "Catt", "Connected");
         HideLoader();
     });
 
-    // När anslutningen stängs
+    // When disconnected
     ws.addEventListener('close', function (event) {
         OutputMessage(GetTimestamp(), "Catt", "Disconnected");
     });
     
-    // Hanterar alla servermeddelande
+    // Manages all server messages
     ws.addEventListener('message', (event) => {
         let args = event.data.split(" ");
         switch (args[0]) {
-            case "userconnect": // En användare anslöt
+            case "userconnect": // A client connected
             OutputMessage(args[1], "Catt", args[2]+" connected");
             break;
 
-            case "message": // En klient skickade ett meddelande
+            case "userdisconnect": // A client disconnected
+            OutputMessage(args[1], "Catt", args[2]+" disconnected");
+            break;
+
+            case "message": //  A client sent a message
             OutputMessage(args[1], args[2], args.splice(3).join(' '));
             break;
         }

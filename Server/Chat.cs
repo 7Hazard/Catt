@@ -6,23 +6,48 @@ namespace Server
 {
     public class Chat : WebSocketBehavior
     {
-        // När en klient har anslutits
+        string name;
+
+        // The client attempts to connect
         protected override void OnOpen()
         {
-            var time = DateTime.Now.ToString("HH:mm:ss");
-            Console.WriteLine($"[{time}] {Context.Host} connected ({ID})");
+            // Timestamp
+            var time = GetTimestamp();
 
-            // Meddela till alla
-            Sessions.Broadcast($"userconnect {time} {Context.Host}");
+            // Get name from query string
+            name = Context.QueryString["name"];
+
+            // Output to console
+            Console.WriteLine($"[{time}] {name} connected ({Context.Host}, {ID})");
+
+            // Message all clients
+            Sessions.Broadcast($"userconnect {time} {name}");
         }
 
-        // När en klient skickar ett meddelande
+        // Client disconnected
+        protected override void OnClose(CloseEventArgs e)
+        {
+            // Timestamp
+            var time = GetTimestamp();
+
+            // Message all clients
+            Sessions.Broadcast($"userdisconnect {time} {name}");
+        }
+
+        // When a client connectes
         protected override void OnMessage(MessageEventArgs e)
         {
-            var time = DateTime.Now.ToString("HH:mm:ss");
-            Console.WriteLine($"[{time}] {Context.Host}: {e.Data}");
+            var time = GetTimestamp();
+            Console.WriteLine($"[{time}] {name}: {e.Data}");
+            
+            // Send the message to the client 
+            // with name and timestamp of recieval
+            Sessions.Broadcast($"message {time} {name} {e.Data}");
+        }
 
-            Sessions.Broadcast($"message {time} {Context.Host} {e.Data}");
+        string GetTimestamp()
+        {
+            return DateTime.Now.ToString("HH:mm:ss");
         }
     }
 }
